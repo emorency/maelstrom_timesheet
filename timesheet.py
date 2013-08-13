@@ -10,15 +10,15 @@ def add_arguments(parser):
     """
     parser.add_argument('project',
                         help='Project name: [bioshare, clsa, cpac, bbmri, ialsa, cihr, interconnect, mrc, p3g, maelstrom]')
-    parser.add_argument('--coordination', '-c', required=False, help='')
-    parser.add_argument('--dev_other', '-dev', required=False, help='')
-    parser.add_argument('--datashield', '-d', required=False, help='')
-    parser.add_argument('--opal', '-op', required=False, help='')
-    parser.add_argument('--onyx', '-on', required=False, help='')
-    parser.add_argument('--mica', '-m', required=False, help='')
-    parser.add_argument('--day', required=False, help='')
-    parser.add_argument('--month', required=False, help='')
-    # parser.add_argument('--comments', '-com', required=False, help='Comments')
+    parser.add_argument('--coordination', '-c', required=False, help='Coordination and Meetings')
+    parser.add_argument('--dev_other', '-dev', required=False, help='Software Development Other')
+    parser.add_argument('--datashield', '-d', required=False, help='DataShield Software Development')
+    parser.add_argument('--opal', '-op', required=False, help='Opal Software Development')
+    parser.add_argument('--onyx', '-on', required=False, help='Onyx Software Development')
+    parser.add_argument('--mica', '-m', required=False, help='Mica Software Development')
+    parser.add_argument('--day', type=int, required=False, help='Day of the month (enter a number less than 0 to enter time for a previous day)')
+    parser.add_argument('--month', required=False, help='Month of the year')
+    # parser.add_argument('--interactive', '-i', required=False, help='Interactive mode')
 
 
 def do_command(args):
@@ -28,30 +28,38 @@ def do_command(args):
     # Build and send request
     try:
         # Login with your Google account
-        gc = gspread.login('emorency@p3g.org', '')
-
+        gc = gspread.login('@p3g.org', '')
         # Open a worksheet from spreadsheet with one shot
-        #wks = gc.open("Copy of Maelstrom FT").sheet1
-        sh = gc.open_by_key('')
+        #wks = gc.open("Maelstrom FT").sheet1
+        sh = gc.open_by_key('0Ai3lwpfy7yHwdFBUNExYN3FoRGxjT1YwUXFrQ0JTX1E')
 
         wks = sh.get_worksheet(10)
+
+        # if not args.interactive:
 
         now = datetime.datetime.now()
         day = now.day
         month = now.month
+        year = now.year
 
-        if args.day:
+        if args.day and args.day > 0:
             day = args.day
+        elif args.day and args.day < 0:
+            # day = day + args.day
+            now = now + datetime.timedelta(days=args.day)
+            day = now.day
+            month = now.month
+            year = now.year
 
         if args.month:
             month = args.month
 
-        currdate = '%s/%s/%s' % (month, day, now.year)
+        currdate = '%s/%s/%s' % (month, day, year)
 
         print("Update " + args.project + " for %s with (y/n) ?" % currdate)
         confirmed = sys.stdin.readline().rstrip().strip()
         if confirmed == "n":
-            print 'Aborted'
+            print("Aborted")
             sys.exit(2)
 
         cell = wks.find(currdate)
@@ -82,7 +90,6 @@ def do_command(args):
         elif args.project == "maelstrom":
             col = 13
 
-        # print("col %s row%s" % (col, row))
         # TASK
         if args.coordination:
             print("Coordination = " + args.coordination)

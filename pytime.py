@@ -95,16 +95,6 @@ def do_command(args):
     """
     # Build and send request
     try:
-        # Login with your Google account
-        gc = gspread.login('EMAIL', 'PASSWORD')
-        # Open a worksheet from spreadsheet with one shot
-        #wks = gc.open("Maelstrom FT").sheet1
-        sh = gc.open_by_key('0Ai3lwpfy7yHwdFBUNExYN3FoRGxjT1YwUXFrQ0JTX1E')
-
-        wks = sh.get_worksheet(SHEET_NUMBER)
-
-        # if not args.interactive:
-
         now = datetime.datetime.now()
         day = now.day
         month = now.month
@@ -124,16 +114,24 @@ def do_command(args):
 
         currdate = '%s/%s/%s' % (month, day, year)
 
-    # if not args.y:
-        print("Update " + args.project + " for %s with (y/n) ?" % currdate)
+        print("Opening spreadsheet and finding info for date %s "  % currdate)
+
+        # Login with your Google account
+        gc = gspread.login('EMAIL', 'PASSWORD')
+        sh = gc.open_by_key('0Ai3lwpfy7yHwdFBUNExYN3FoRGxjT1YwUXFrQ0JTX1E')
+        wks = sh.get_worksheet(SHEET_NUMBER)
+
+        # if not args.y:
+        cell = wks.find(currdate)
+        hours = wks.cell(cell.row + 10, cell.col + 1).value
+        if not hours:
+            hours = 0;
+
+        print("Update project " + args.project + " (currently has %s hours) ? (y/n)" % hours)
         confirmed = sys.stdin.readline().rstrip().strip()
         if confirmed == "n":
             print("Aborted")
             sys.exit(2)
-
-        cell = wks.find(currdate)
-
-        print("Found something at R%sC%s" % (cell.row, cell.col))
 
         row = cell.row
 
@@ -144,26 +142,27 @@ def do_command(args):
 
         if args.dev_other:
             print("Dev Other = " + args.dev_other)
-            wks.update_cell(row + 4,  args.col, args.dev_other)
+            wks.update_cell(row + 4, args.col, args.dev_other)
 
         if args.datashield:
             print("Datashield = " + args.datashield)
-            wks.update_cell(row + 5,  args.col, args.datashield)
+            wks.update_cell(row + 5, args.col, args.datashield)
 
         if args.opal:
             print("Opal = " + args.opal)
-            wks.update_cell(row + 6,  args.col, args.opal)
+            wks.update_cell(row + 6, args.col, args.opal)
 
         if args.onyx:
             print("Onyx = " + args.onyx)
-            wks.update_cell(row + 7,  args.col, args.onyx)
+            wks.update_cell(row + 7, args.col, args.onyx)
 
         if args.mica:
             print("Mica = " + args.mica)
-            wks.update_cell(row + 8,  args.col, args.mica)
+            wks.update_cell(row + 8, args.col, args.mica)
 
     except Exception, e:
-        print e
+        print
+        e
 
 
 def add_subcommand(name, help, add_args_func, default_func):

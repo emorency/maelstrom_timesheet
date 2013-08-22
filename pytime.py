@@ -19,8 +19,6 @@ def add_arguments(parser):
     parser.add_argument('--day', type=int, required=False,
                         help='Day of the month (enter a number less than 0 to enter time for a previous day)')
     parser.add_argument('--month', required=False, help='Month of the year')
-    # parser.add_argument('--yes', '-y', type=Boolean, required=False, help='Automatically answer yes')
-    # parser.add_argument('--interactive', '-i', required=False, help='Interactive mode')
 
 
 def add_sub_arguments(name):
@@ -119,7 +117,7 @@ def do_command(args):
         # Login with your Google account
         gc = gspread.login('EMAIL', 'PASSWORD')
         sh = gc.open_by_key('0Ai3lwpfy7yHwdFBUNExYN3FoRGxjT1YwUXFrQ0JTX1E')
-        wks = sh.get_worksheet(SHEET_NUMBER)
+        wks = sh.get_worksheet(SHEET_NB)
 
         # if not args.y:
         cell = wks.find(currdate)

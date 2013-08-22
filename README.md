@@ -7,7 +7,7 @@ Installation
 ===
 
 - [Install GSpread](https://github.com/burnash/gspread)
-
+- Edit the file pytime.py: set your email, password and corresponding sheet number (starting from 1)
 
 Usage
 ===

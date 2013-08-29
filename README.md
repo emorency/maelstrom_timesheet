@@ -31,3 +31,6 @@ Examples:
 
 	# Enter time for a specific day: August 5th
 	python pytime.py bioshare --datashield 3 --dev_other 4.5 --day 5 --month 8
+
+	# Enter time for a project and add a comment for a specified task (follow on-screen instructions to select a task)
+	python pytime.py maelstrom --mica 5 --comment "A comment about a task"

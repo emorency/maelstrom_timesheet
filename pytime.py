@@ -16,6 +16,7 @@ def add_arguments(parser):
     parser.add_argument('--opal', '-op', required=False, help='Opal Software Development')
     parser.add_argument('--onyx', '-on', required=False, help='Onyx Software Development')
     parser.add_argument('--mica', '-m', required=False, help='Mica Software Development')
+    parser.add_argument('--comment', '-co', required=False, help='Add a comment')
     parser.add_argument('--day', type=int, required=False,
                         help='Day of the month (enter a number less than 0 to enter time for a previous day)')
     parser.add_argument('--month', required=False, help='Month of the year')
@@ -112,12 +113,12 @@ def do_command(args):
 
         currdate = '%s/%s/%s' % (month, day, year)
 
-        print("Opening spreadsheet and finding info for date %s "  % currdate)
+        print("Opening spreadsheet and finding info for date %s " % currdate)
 
         # Login with your Google account
         gc = gspread.login('EMAIL', 'PASSWORD')
         sh = gc.open_by_key('0Ai3lwpfy7yHwdFBUNExYN3FoRGxjT1YwUXFrQ0JTX1E')
-        wks = sh.get_worksheet(SHEET_NB)
+        wks = sh.get_worksheet(NB_SHEET)
 
         # if not args.y:
         cell = wks.find(currdate)
@@ -157,6 +158,34 @@ def do_command(args):
         if args.mica:
             print("Mica = " + args.mica)
             wks.update_cell(row + 8, args.col, args.mica)
+
+        if args.comment:
+            print("Select task to comment (1: Coordination; 2: Development Other; 3: Datashield; 4: Opal; 5: Onyx; 6: Mica):")
+            task = sys.stdin.readline().rstrip().strip()
+
+            if task == "1":
+                print("Coordination: %s" % args.comment)
+                comment_row = row + 3
+            elif task == "2":
+                print("Development Other: %s" % args.comment)
+                comment_row = row + 4
+            elif task == "3":
+                print("DataShield : %s" % args.comment)
+                comment_row = row + 5
+            elif task == "4":
+                print("Opal: %s" % args.comment)
+                comment_row = row + 6
+            elif task == "5":
+                print("Onyx: %s" % args.comment)
+                comment_row = row + 7
+            elif task == "6":
+                print("Mica: %s" % args.comment)
+                comment_row = row + 8
+            else:
+                print("Wrong task number, timesheet has been updated but no comment has been saved")
+                sys.exit(2)
+
+            wks.update_cell(comment_row, 15, args.comment)
 
     except Exception, e:
         print
